@@ -66,10 +66,20 @@ POST {{content_host}}/content/teachplan
 Content-Type: application/json
 
 {
-  "courseId" : 74,
+  "courseId" : 117,
   "parentid": 0,
   "grade" : 1,
-  "pname" : "新章名称 [点击修改]"
+  "pname" : "第四章解决bug"
+}
+### 新增课程计划--节,从数据库找到第一级的课程计划id向其下边添加计划
+POST {{content_host}}/content/teachplan
+Content-Type: application/json
+
+{
+  "courseId" : 117,
+  "parentid": 284,
+  "grade" : 2,
+  "pname" : "3.1bug修改"
 }
 
 
