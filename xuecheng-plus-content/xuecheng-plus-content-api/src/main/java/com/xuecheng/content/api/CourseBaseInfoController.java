@@ -59,8 +59,15 @@ public class CourseBaseInfoController {
     @PutMapping("/course")
     public CourseBaseInfoDto modifyCourseBase(@RequestBody @Validated EditCourseDto editCourseDto){
         //机构id，由于认证系统没有上线暂时硬编码
-        Long companyId = 1232141425L;
+        Long companyId = 1L;
         return courseBaseInfoService.updateCourseBase(companyId,editCourseDto);
+    }
+
+    @ApiOperation("删除课程基础信息")
+    @DeleteMapping("/course/{courseId}")
+    public void deleteCourseBase(@PathVariable Long courseId){
+        Long companyId = 1L;
+        courseBaseInfoService.deleteCourse(companyId,courseId);
     }
 
 
