@@ -1,6 +1,7 @@
 package com.xuecheng.content.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.content.mapper.TeachplanMapper;
 import com.xuecheng.content.model.dto.SaveTeachplanDto;
 import com.xuecheng.content.model.dto.TeachplanDto;
@@ -53,6 +54,37 @@ public class TeachplanServiceImpl implements TeachplanService {
         }
 
     }
+
+    //删除课程计划接口实现方法
+
+    @Override
+    public void deleteTeachplan(Long teachplanId) {
+        if(teachplanId == null)
+            XueChengPlusException.cast("课程计划id为空");
+        Teachplan teachplan = teachplanMapper.selectById(teachplanId);
+        Integer grade = teachplan.getGrade();
+        //当前课程计划为章
+        if(grade == 1){
+            //查询当前课程计划下是否有小节
+            LambdaQueryWrapper<Teachplan> queryWrapper = new LambdaQueryWrapper<>();
+            //select * from teachplan where parentid = #{当前章计划id}
+            queryWrapper.eq(Teachplan::getParentid,teachplanId);
+            //获取一下查询的条目数
+            Integer count = teachplanMapper.selectCount(queryWrapper);
+            //如果当前章节下还有小结，则抛异常
+            if(count > 0){
+                XueChengPlusException.cast("当前章下有小节，无法删除");
+            }
+            teachplanMapper.deleteById(teachplanId);
+
+
+        }else teachplanMapper.deleteById(teachplanId);
+        LambdaQueryWrapper<Teachplan> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Teachplan::getParentid,teachplanId);
+        teachplanMapper.delete(queryWrapper);
+
+    }
+
     /**
      * @description 获取最新的排序号
      * @param courseId  课程id

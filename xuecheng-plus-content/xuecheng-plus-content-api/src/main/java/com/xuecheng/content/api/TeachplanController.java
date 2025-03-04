@@ -37,5 +37,11 @@ public class TeachplanController {
         teachplanService.saveTeachplan(teachplan);
     }
 
+    @ApiOperation("删除课程计划")
+    @ApiImplicitParam(value = "teachplanId", name = "课程计划Id", required = true, dataType = "Long", paramType = "path")
+    @DeleteMapping("/teachplan/{teachplanId}")
+    public void deleteTeachplan(@PathVariable Long teachplanId) {
+        teachplanService.deleteTeachplan(teachplanId);
+    }
 
 }

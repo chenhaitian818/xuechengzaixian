@@ -30,6 +30,8 @@ public interface TeachplanService {
      * @date 2025/3/2 12:02
      */
     public void saveTeachplan(SaveTeachplanDto teachplanDto);
+
+    void deleteTeachplan(Long teachplanId);
 }
 
 
