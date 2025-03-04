@@ -32,12 +32,12 @@ public class CourseTeacherController {
     @ApiOperation("添加/修改教师信息接口")
     @PostMapping("/courseTeacher")
     public CourseTeacher saveCourseTeacher(@RequestBody CourseTeacher courseTeacher) {
-        return null;
+        return courseTeacherService.saveCourseTeacher(courseTeacher);
     }
 
     @ApiOperation("删除教师信息接口")
     @DeleteMapping("/courseTeacher/course/{courseId}/{teacherId}")
     public void deleteCourseTeacher(@PathVariable Long courseId, @PathVariable Long teacherId) {
-
+        courseTeacherService.deleteCourseTeacher(courseId, teacherId);
     }
 }
