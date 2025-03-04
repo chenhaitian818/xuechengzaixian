@@ -82,4 +82,6 @@ Content-Type: application/json
   "pname" : "3.1bug修改"
 }
 
+### 教师查询
+GET {{content_host}}/content/courseTeacher/list/74
 
