@@ -85,6 +85,81 @@ public class TeachplanServiceImpl implements TeachplanService {
 
     }
 
+    @Transactional
+    @Override
+    public void orderByTeachplan(String moveType, Long teachplanId) {
+        Teachplan teachplan = teachplanMapper.selectById(teachplanId);
+        //获取当前层级和当前orderby,章节移动和小结移动的处理方式不同
+        Integer grade = teachplan.getGrade();
+        Integer orderby = teachplan.getOrderby();
+        //章节移动是比较同一课程id下的orderby
+        Long courseId = teachplan.getCourseId();
+        //小节移动是比较同一章节id下的orderby
+        Long parentid = teachplan.getParentid();
+        if ("moveup".equals(moveType)){
+            if(grade == 1){
+                //章节上移，找到上一个章节的orderby，然后交换orderby
+                //select * from teachplan where courseId = 117 and grade = 1 and order>1 order by orderby ase limit 1
+                LambdaQueryWrapper<Teachplan> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(Teachplan::getGrade, 1)
+                        .eq(Teachplan::getCourseId, courseId)
+                        .lt(Teachplan::getOrderby, orderby)
+                        .orderByDesc(Teachplan::getOrderby)
+                        .last("LIMIT 1");
+                Teachplan tmp = teachplanMapper.selectOne(queryWrapper);
+                exchangeOrderby(teachplan, tmp);
+            }else if (grade == 2) {
+                //小节上移，找到上一个小节的orderby，然后交换orderby
+                LambdaQueryWrapper<Teachplan> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(Teachplan::getParentid, parentid)
+                        .lt(Teachplan::getOrderby, orderby)
+                        .orderByDesc(Teachplan::getOrderby)
+                        .last("LIMIT 1");
+                Teachplan tmp = teachplanMapper.selectOne(queryWrapper);
+                exchangeOrderby(teachplan, tmp);
+            }
+
+        }else if ("movedown".equals(moveType)){
+            if(grade == 1){
+                //章节下移，找到下一个章节的orderby，然后交换orderby
+                LambdaQueryWrapper<Teachplan> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(Teachplan::getCourseId, 1)
+                        .eq(Teachplan::getCourseId, courseId)
+                        .gt(Teachplan::getOrderby, orderby)
+                        .orderByAsc(Teachplan::getOrderby)
+                        .last("LIMIT 1");
+            } else if (grade == 2) {
+                //小节下移，找到下一个
+                LambdaQueryWrapper<Teachplan> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(Teachplan::getParentid, parentid)
+                        .gt(Teachplan::getOrderby, orderby)
+                        .orderByAsc(Teachplan::getOrderby)
+                        .last("LIMIT 1");
+                Teachplan tmp = teachplanMapper.selectOne(queryWrapper);
+                exchangeOrderby(teachplan, tmp);
+
+            }
+        }
+
+    }
+    /**
+     * 交换两个Teachplan的orderby
+     * @param teachplan
+     * @param tmp
+     */
+    private void exchangeOrderby(Teachplan teachplan, Teachplan tmp) {
+        if (tmp == null)
+            XueChengPlusException.cast("已经到头啦，不能再移啦");
+        else {
+            // 交换orderby，更新
+            Integer orderby = teachplan.getOrderby();
+            Integer tmpOrderby = tmp.getOrderby();
+            teachplan.setOrderby(tmpOrderby);
+            tmp.setOrderby(orderby);
+            teachplanMapper.updateById(tmp);
+            teachplanMapper.updateById(teachplan);
+        }
+    }
     /**
      * @description 获取最新的排序号
      * @param courseId  课程id
