@@ -2,6 +2,7 @@ package com.xuecheng.content.api;
 
 import com.xuecheng.content.model.dto.CourseCategoryTreeDto;
 import com.xuecheng.content.service.CourseCategoryService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import java.util.List;
  * @Date 2025/2/20 16:15
  * @description 课程分类相关接口
  */
+@Api(value = "课程分类相关接口", tags = "课程分类相关接口")
 @Slf4j
 @RestController
 public class CourseCategoryController {
